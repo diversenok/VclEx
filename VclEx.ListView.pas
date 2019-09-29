@@ -291,7 +291,7 @@ var
 begin
   State := KeyDataToShiftState(Message.KeyData);
 
-  // <Ctrl + A> to select everyting
+  // <Ctrl + A> to select everything
   if MultiSelect and (State = [ssCtrl]) and (Message.CharCode = Ord('A')) then
   begin
     Items.BeginUpdate;
