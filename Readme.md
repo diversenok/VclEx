@@ -8,6 +8,12 @@ To compile and design projects that depend on this library inside IDE you need t
 
 When using in a VCL application make sure to add the sources (*.pas) to your project by going to Project -> Add to project.
 
+The project was created in Delphi 10.3, although it should be possible to open it in older versions of Delphi (like XE8).
+
+## Demo
+
+There is a demo application in the `demo` branch of this repository that highlights improvements to the components. You can compile it from the command line without installing the package.
+
 ## ListViewEx
 
 ### Fixes
