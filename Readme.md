@@ -33,3 +33,14 @@ There is a demo application in the `demo` branch of this repository that highlig
  - <kbd>Crtl+A</kbd> to select all items
  - <kbd>Crtl+C</kbd> to copy content of a main column
  - <kbd>Crtl+Shift+C</kbd> to copy content of all columns
+
+## FormEx
+
+This component does not require installation. Use it as a base class when designing forms.
+
+### Changes
+ - `ShowModal` now raises `EAbortException` when the dialog result is `mrAbort`
+ - The form frees itself on close by default
+
+### New features
+ - Stay-on-top checkbox in the window title menu
