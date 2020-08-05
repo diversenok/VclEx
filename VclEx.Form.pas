@@ -38,7 +38,7 @@ function TFormEx.ShowModal: Integer;
 begin
   Result := inherited;
 
-  if ModalResult = mrAbort then
+  if ModalResult in [mrAbort, mrCancel] then
     Abort;
 end;
 
