@@ -14,6 +14,7 @@ type
     FColorEnabled: Boolean;
     FHint: String;
     FOwnedData: TObject;
+    FOwnedIData: IInterface;
     procedure SetColor(const Value: TColor);
     procedure SetColorEnabled(const Value: Boolean);
     function GetOwnerItems: TListItemsEx;
@@ -27,6 +28,7 @@ type
     property ColorEnabled: Boolean read FColorEnabled write SetColorEnabled;
     property Hint: String read FHint write FHint;
     property OwnedData: TObject read FOwnedData write FOwnedData;
+    property OwnedIData: IInterface read FOwnedIData write FOwnedIData;
     property Owner: TListItemsEx read GetOwnerItems;
     function Matches(SearchPattern: String; OnlyColumn: Integer = -1): Boolean;
     property Cell[Index: Integer]: String read GetCellText write SetCellText;
