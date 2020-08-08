@@ -10,9 +10,11 @@ type
   private
     const idOnTop = 10001;
     procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
+    procedure WMInitMenuPopup(var Message: TWMInitMenuPopup); message WM_INITMENUPOPUP;
   protected
     procedure DoClose(var Action: TCloseAction); override;
     procedure DoCreate; override;
+    procedure DoShow; override;
   public
     function ShowModal: Integer; override;
   end;
@@ -34,12 +36,32 @@ begin
     'Stay On &Top');
 end;
 
+procedure TFormEx.DoShow;
+begin
+  // Inherit stay-on-top style to prevent children hiding behind a parent
+  if Owner is TForm then
+    if TForm(Owner).FormStyle = fsStayOnTop then
+      FormStyle := fsStayOnTop;
+end;
+
 function TFormEx.ShowModal: Integer;
 begin
   Result := inherited;
 
   if ModalResult in [mrAbort, mrCancel] then
     Abort;
+end;
+
+procedure TFormEx.WMInitMenuPopup(var Message: TWMInitMenuPopup);
+begin
+  if not Message.SystemMenu then
+    Exit;
+
+  // Update state of our stay-on-top menu item
+  if FormStyle = fsStayOnTop then
+    CheckMenuItem(Message.MenuPopup, idOnTop, MF_CHECKED)
+  else
+    CheckMenuItem(Message.MenuPopup, idOnTop, MF_UNCHECKED);
 end;
 
 procedure TFormEx.WMSysCommand(var Message: TWMSysCommand);
