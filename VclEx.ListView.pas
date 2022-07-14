@@ -124,7 +124,7 @@ begin
   inherited;
 end;
 
-procedure TListViewEx.CMHintShow(var Message: TCMHintShow);
+procedure TListViewEx.CMHintShow;
 begin
   if not Assigned(OnInfoTip) then
   begin
@@ -136,7 +136,7 @@ begin
     inherited;
 end;
 
-procedure TListViewEx.CNNotify(var Message: TWMNotifyLV);
+procedure TListViewEx.CNNotify;
 begin
   inherited;
 
@@ -150,7 +150,7 @@ begin
   end;
 end;
 
-procedure TListViewEx.CopySelectedToClipboard(AllColumns: Boolean);
+procedure TListViewEx.CopySelectedToClipboard;
 var
   i, j: integer;
   Texts: array of String;
@@ -180,13 +180,13 @@ begin
   Clipboard.SetTextBuf(PWideChar(Text));
 end;
 
-constructor TListViewEx.Create(AOwner: TComponent);
+constructor TListViewEx.Create;
 begin
   inherited;
   FClipboardColumn := -1;
 end;
 
-function TListViewEx.CreateListItem: TListItem;
+function TListViewEx.CreateListItem;
 var
   LClass: TListItemClass;
 begin
@@ -196,13 +196,12 @@ begin
   Result := LClass.Create(Items);
 end;
 
-function TListViewEx.CreateListItems: TListItems;
+function TListViewEx.CreateListItems;
 begin
   Result := TListItemsEx.Create(Self);
 end;
 
-function TListViewEx.CustomDrawItem(Item: TListItem; State: TCustomDrawState;
-  Stage: TCustomDrawStage): Boolean;
+function TListViewEx.CustomDrawItem;
 begin
   if FColoringItems then
   begin
@@ -214,25 +213,24 @@ begin
   Result := inherited;
 end;
 
-procedure TListViewEx.DoContextPopup(MousePos: TPoint; var Handled: Boolean);
+procedure TListViewEx.DoContextPopup;
 begin
   Handled := FPopupOnItemsOnly and (SelCount = 0);
   if not Handled then
     inherited;
 end;
 
-function TListViewEx.GetItems: TListItemsEx;
+function TListViewEx.GetItems;
 begin
   Result := inherited Items as TListItemsEx;
 end;
 
-function TListViewEx.GetSelected: TListItemEx;
+function TListViewEx.GetSelected;
 begin
   Result := inherited Selected as TListItemEx;
 end;
 
-function TListViewEx.IsCustomDrawn(Target: TCustomDrawTarget;
-  Stage: TCustomDrawStage): Boolean;
+function TListViewEx.IsCustomDrawn;
 begin
   if Target = dtItem then
     Result := FColoringItems or inherited
@@ -240,8 +238,7 @@ begin
     Result := inherited;
 end;
 
-function TListViewEx.ItemToStringEx(Item: TListItemEx; AllColumns: Boolean):
-  String;
+function TListViewEx.ItemToStringEx;
 begin
   if AllColumns or (FClipboardColumn < 0) then
     Result := Item.ToString
@@ -253,24 +250,24 @@ begin
     Result := '';
 end;
 
-procedure TListViewEx.SetItems(const Value: TListItemsEx);
+procedure TListViewEx.SetItems;
 begin
   inherited Items := Value;
 end;
 
-procedure TListViewEx.SetItemsColoring(const Value: Boolean);
+procedure TListViewEx.SetItemsColoring;
 begin
   FColoringItems := Value;
   if FColoringItems then
     Repaint;
 end;
 
-procedure TListViewEx.SetSelected(const Value: TListItemEx);
+procedure TListViewEx.SetSelected;
 begin
   inherited Selected := Value;
 end;
 
-procedure TListViewEx.SetSelectedCheckboxesState(State: Boolean);
+procedure TListViewEx.SetSelectedCheckboxesState;
 var
   i: integer;
 begin
@@ -281,13 +278,12 @@ begin
   Items.EndUpdate;
 end;
 
-procedure TListViewEx.ShowItemsHint(Sender: TObject; Item: TListItem;
-  var InfoTip: string);
+procedure TListViewEx.ShowItemsHint;
 begin
   InfoTip := (Item as TListItemEx).Hint;
 end;
 
-procedure TListViewEx.WMKeyDown(var Message: TWMKeyDown);
+procedure TListViewEx.WMKeyDown;
 var
   State: TShiftState;
 begin
@@ -322,12 +318,12 @@ end;
 
 { TListItemsEx }
 
-function TListItemsEx.Add: TListItemEx;
+function TListItemsEx.Add;
 begin
   Result := AddItem(nil, -1);
 end;
 
-function TListItemsEx.AddItem(Item: TListItemEx; Index: Integer): TListItemEx;
+function TListItemsEx.AddItem;
 var
   FixCaption: String;
 begin
@@ -342,7 +338,7 @@ begin
   end;
 end;
 
-function TListItemsEx.ApplySelectionSnapshot: Boolean;
+function TListItemsEx.ApplySelectionSnapshot;
 var
   i: Integer;
 begin
@@ -367,7 +363,7 @@ begin
   end;
 end;
 
-procedure TListItemsEx.BeginUpdate(MakeSelectionSnapshot: Boolean);
+procedure TListItemsEx.BeginUpdate;
 begin
   if MakeSelectionSnapshot then
     CreateSelectionSnapshot;
@@ -390,7 +386,7 @@ begin
   end;
 end;
 
-procedure TListItemsEx.EndUpdate(ApplySnapshot: Boolean);
+procedure TListItemsEx.EndUpdate;
 begin
   if ApplySnapshot then
   begin
@@ -401,35 +397,34 @@ begin
   (Self as TListItems).EndUpdate;
 end;
 
-function TListItemsEx.GetItem(Index: Integer): TListItemEx;
+function TListItemsEx.GetItem;
 begin
   Result := inherited GetItem(Index) as TListItemEx;
 end;
 
-function TListItemsEx.GetOwnerListView: TListViewEx;
+function TListItemsEx.GetOwnerListView;
 begin
   Result := inherited Owner as TListViewEx;
 end;
 
-function TListItemsEx.InheritedAddItem(Item: TListItemEx;
-  Index: Integer): TListItemEx;
+function TListItemsEx.InheritedAddItem;
 begin
   Result := (Self as TListItems).AddItem(Item, Index) as TListItemEx;
 end;
 
-function TListItemsEx.Insert(Index: Integer): TListItemEx;
+function TListItemsEx.Insert;
 begin
   Result := AddItem(nil, Index);
 end;
 
-procedure TListItemsEx.SetItem(Index: Integer; Value: TListItemEx);
+procedure TListItemsEx.SetItem;
 begin
   inherited SetItem(Index, Value);
 end;
 
 { TListItemEx }
 
-constructor TListItemEx.Create(AOwner: TListItems);
+constructor TListItemEx.Create;
 begin
   inherited;
   FColor := clWindow;
@@ -441,7 +436,7 @@ begin
   inherited;
 end;
 
-function TListItemEx.GetCellText(Index: Integer): String;
+function TListItemEx.GetCellText;
 begin
   if Index < 0 then
     Result := ''
@@ -453,13 +448,12 @@ begin
     Result := '';
 end;
 
-function TListItemEx.GetOwnerItems: TListItemsEx;
+function TListItemEx.GetOwnerItems;
 begin
   Result := inherited Owner as TListItemsEx;
 end;
 
-function TListItemEx.Matches(SearchPattern: String;
-  OnlyColumn: Integer): Boolean;
+function TListItemEx.Matches;
 var
   sub: Integer;
 begin
@@ -488,7 +482,7 @@ begin
     Result := False;
 end;
 
-procedure TListItemEx.SetColor(const Value: TColor);
+procedure TListItemEx.SetColor;
 begin
   FColorEnabled := True;
 
@@ -500,7 +494,7 @@ begin
   end;
 end;
 
-procedure TListItemEx.SetColorEnabled(const Value: Boolean);
+procedure TListItemEx.SetColorEnabled;
 begin
   if FColorEnabled <> Value then
   begin
@@ -510,7 +504,7 @@ begin
   end;
 end;
 
-procedure TListItemEx.SetCellText(Index: Integer; const Value: String);
+procedure TListItemEx.SetCellText;
 var
   i: Integer;
 begin
@@ -530,7 +524,7 @@ begin
   end;
 end;
 
-function TListItemEx.ToString: String;
+function TListItemEx.ToString;
 begin
   if SubItems.Count = 0 then
     Result := Caption

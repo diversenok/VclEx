@@ -23,7 +23,7 @@ implementation
 
 { TFormEx }
 
-procedure TFormEx.DoClose(var Action: TCloseAction);
+procedure TFormEx.DoClose;
 begin
   Action := caFree;
   inherited;
@@ -44,7 +44,7 @@ begin
       FormStyle := fsStayOnTop;
 end;
 
-function TFormEx.ShowModal: Integer;
+function TFormEx.ShowModal;
 begin
   Result := inherited;
 
@@ -52,7 +52,7 @@ begin
     Abort;
 end;
 
-procedure TFormEx.WMInitMenuPopup(var Message: TWMInitMenuPopup);
+procedure TFormEx.WMInitMenuPopup;
 begin
   if not Message.SystemMenu then
     Exit;
@@ -64,7 +64,7 @@ begin
     CheckMenuItem(Message.MenuPopup, idOnTop, MF_UNCHECKED);
 end;
 
-procedure TFormEx.WMSysCommand(var Message: TWMSysCommand);
+procedure TFormEx.WMSysCommand;
 var
   hSysMenu: HMENU;
 begin
