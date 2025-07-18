@@ -111,7 +111,7 @@ uses
 
 procedure Register;
 begin
-  RegisterComponents('Win32Ex', [TListViewEx]);
+  RegisterComponents('Extensions', [TListViewEx]);
 end;
 
 { TListViewEx }
