@@ -33,6 +33,7 @@ requires
   vcl;
 
 contains
-  VclEx.ListView in 'VclEx.ListView.pas';
+  VclEx.ListView in 'VclEx.ListView.pas',
+  VclEx.Edit in 'VclEx.Edit.pas';
 
 end.
