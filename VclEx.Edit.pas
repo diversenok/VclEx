@@ -3,10 +3,18 @@ unit VclEx.Edit;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Controls, Vcl.StdCtrls, Winapi.Messages;
+  System.SysUtils, System.Classes, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.Messages;
 
 type
   TEditEx = class(TEdit)
+  protected
+    procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
+    procedure KeyPress(var Key: Char); override;
+    procedure CreateWindowHandle(const Params: TCreateParams); override;
+  end;
+
+  TButtonedEditEx = class(TButtonedEdit)
   protected
     procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
     procedure KeyPress(var Key: Char); override;
@@ -22,7 +30,7 @@ uses
 
 procedure Register;
 begin
-  RegisterComponents('Extensions', [TEditEx]);
+  RegisterComponents('Extensions', [TEditEx, TButtonedEditEx]);
 end;
 
 var
@@ -140,6 +148,35 @@ begin
   end;
 end;
 
+function HandleCtrlBackspace(
+  Edit: TCustomEdit;
+  var Message: TWMKeyDown
+): Boolean;
+var
+  SelStart, SelEnd: Integer;
+begin
+  Result := False;
+
+  // Handle Ctrl+Backspace to erase the word on the left
+  if (GetKeyState(VK_CONTROL) < 0) and (Message.CharCode = VK_BACK) then
+  begin
+    SendMessageW(Edit.Handle, EM_GETSEL, WPARAM(@SelStart), LPARAM(@SelEnd));
+
+    // Only if nothing is selected
+    if SelStart = SelEnd then
+    begin
+      // Identify where the word starts
+      SelStart := EditWordBreakProc(PWideChar(Edit.Text), SelStart, SelStart + 1,
+        WB_LEFT);
+
+      // Select and erase it
+      SendMessageW(Edit.Handle, EM_SETSEL, WPARAM(SelStart), LPARAM(SelEnd));
+      SendMessageW(Edit.Handle, EM_REPLACESEL, 1, LPARAM(nil));
+      Result := True;
+    end;
+  end;
+end;
+
 { TEditEx }
 
 procedure TEditEx.CreateWindowHandle;
@@ -150,7 +187,7 @@ end;
 
 procedure TEditEx.KeyPress;
 begin
-  // Avoid adding the delete character on Crtl+Backspace
+  // Avoid adding the DEL character on Crtl+Backspace
   if (GetKeyState(VK_CONTROL) < 0) and (Key = #$7F) then
     Key := #0;
 
@@ -158,28 +195,32 @@ begin
 end;
 
 procedure TEditEx.WMKeyDown;
-var
-  SelStart, SelEnd: Integer;
 begin
-  // Handle Ctrl+Backspace to erase the word on the left
-  if (GetKeyState(VK_CONTROL) < 0) and (Message.CharCode = VK_BACK) then
-  begin
-    SendMessageW(Handle, EM_GETSEL, WPARAM(@SelStart), LPARAM(@SelEnd));
+  if not HandleCtrlBackspace(Self, Message) then
+    inherited;
+end;
 
-    // Only if nothing is selected
-    if SelStart = SelEnd then
-    begin
-      // Identify where the word starts
-      SelStart := EditWordBreakProc(PWideChar(Text), SelStart, SelStart + 1,
-        WB_LEFT);
+{ TButtonedEditEx }
 
-      // Select and erase it
-      SendMessageW(Handle, EM_SETSEL, WPARAM(SelStart), LPARAM(SelEnd));
-      SendMessageW(Handle, EM_REPLACESEL, 1, LPARAM(nil));
-    end;
-  end;
+procedure TButtonedEditEx.CreateWindowHandle;
+begin
+  inherited;
+  SendMessageW(Handle, EM_SETWORDBREAKPROC, 0, LPARAM(@EditWordBreakProc));
+end;
+
+procedure TButtonedEditEx.KeyPress;
+begin
+  // Avoid adding the DEL character on Crtl+Backspace
+  if (GetKeyState(VK_CONTROL) < 0) and (Key = #$7F) then
+    Key := #0;
 
   inherited;
+end;
+
+procedure TButtonedEditEx.WMKeyDown;
+begin
+  if not HandleCtrlBackspace(Self, Message) then
+    inherited;
 end;
 
 end.
