@@ -52,11 +52,22 @@ begin
 end;
 
 procedure TFormEx.DoShow;
+var
+  Control: TWinControl;
 begin
-  // Inherit stay-on-top style to prevent children from hiding behind the parent
-  if (FormStyle = fsNormal) and (Owner is TWinControl) and
-    IsWindowTopmost(TWinControl(Owner).Handle) then
-    FormStyle := fsStayOnTop;
+  inherited;
+
+  // Inherit stay-on-top from the owning form
+  if (FormStyle = fsNormal) and (Owner is TWinControl) then
+  begin
+    Control := TWinControl(Owner);
+
+    while Assigned(Control) and not (Control is TForm) do
+      Control := Control.Parent;
+
+    if (Control is TForm) and IsWindowTopmost(Control.Handle) then
+      FormStyle := fsStayOnTop;
+  end;
 end;
 
 function TFormEx.ShowModal;
