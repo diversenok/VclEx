@@ -47,10 +47,11 @@ This component does not require installation. Use it as a base class when design
 
 ## EditEx and ButtonedEditEx
 
-Improved versions of TEdit and TButtonedEdit controls.
+Improved versions of `TEdit` and `TButtonedEdit` controls.
 
 ### Changes
  - <kbd>Ctrl+Left</kbd> and <kbd>Ctrl+Right</kbd> now stop on more characters (including brackets, underscores, and quotation marks).
 
 ### New features
- - <kbd>Ctrl+Backspace</kbd> erases the previous word.
+ - <kbd>Ctrl+Backspace</kbd> erases the previous word
+ - `OnDelayedChange` event that fires after a configurable delay of `DelayedChangeTimeout` after the user stops typing

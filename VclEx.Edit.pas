@@ -8,17 +8,37 @@ uses
 
 type
   TEditEx = class(TEdit)
+  private
+    FOnDelayedChange: TNotifyEvent;
+    FDelayedChangeTimeout: Cardinal;
   protected
+    procedure WMTimer(var Message: TWMTimer); message WM_TIMER;
     procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
     procedure KeyPress(var Key: Char); override;
     procedure CreateWindowHandle(const Params: TCreateParams); override;
+    procedure Change; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property DelayedChangeTimeout: Cardinal read FDelayedChangeTimeout write FDelayedChangeTimeout default 500;
+    property OnDelayedChange: TNotifyEvent read FOnDelayedChange write FOnDelayedChange;
   end;
 
   TButtonedEditEx = class(TButtonedEdit)
+  private
+    FOnDelayedChange: TNotifyEvent;
+    FDelayedChangeTimeout: Cardinal;
   protected
+    procedure WMTimer(var Message: TWMTimer); message WM_TIMER;
     procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
     procedure KeyPress(var Key: Char); override;
     procedure CreateWindowHandle(const Params: TCreateParams); override;
+    procedure Change; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property DelayedChangeTimeout: Cardinal read FDelayedChangeTimeout write FDelayedChangeTimeout default 500;
+    property OnDelayedChange: TNotifyEvent read FOnDelayedChange write FOnDelayedChange;
   end;
 
 procedure Register;
@@ -179,6 +199,29 @@ end;
 
 { TEditEx }
 
+const
+  DELAYED_CHANGE_TIMER_ID = $DE7A4D1;
+
+procedure TEditEx.Change;
+begin
+  inherited;
+
+  if FDelayedChangeTimeout > 0 then
+  begin
+    // Prepare a timer for delayed event invocation
+    if Assigned(FOnDelayedChange) then
+      SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil)
+  end
+  else if Assigned(FOnDelayedChange) then
+    FOnDelayedChange(Self);
+end;
+
+constructor TEditEx.Create;
+begin
+  inherited;
+  FDelayedChangeTimeout := 500;
+end;
+
 procedure TEditEx.CreateWindowHandle;
 begin
   inherited;
@@ -200,7 +243,41 @@ begin
     inherited;
 end;
 
+procedure TEditEx.WMTimer;
+begin
+  if Message.TimerID = DELAYED_CHANGE_TIMER_ID then
+  begin
+    // Prevent repetitive invocation
+    KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
+
+    if Assigned(FOnDelayedChange) then
+      FOnDelayedChange(Self);
+  end
+  else
+    inherited;
+end;
+
 { TButtonedEditEx }
+
+procedure TButtonedEditEx.Change;
+begin
+  inherited;
+
+  if FDelayedChangeTimeout > 0 then
+  begin
+    // Prepare a timer for delayed event invocation
+    if Assigned(FOnDelayedChange) then
+      SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil)
+  end
+  else if Assigned(FOnDelayedChange) then
+    FOnDelayedChange(Self);
+end;
+
+constructor TButtonedEditEx.Create;
+begin
+  inherited;
+  FDelayedChangeTimeout := 500;
+end;
 
 procedure TButtonedEditEx.CreateWindowHandle;
 begin
@@ -220,6 +297,20 @@ end;
 procedure TButtonedEditEx.WMKeyDown;
 begin
   if not HandleCtrlBackspace(Self, Message) then
+    inherited;
+end;
+
+procedure TButtonedEditEx.WMTimer;
+begin
+  if Message.TimerID = DELAYED_CHANGE_TIMER_ID then
+  begin
+    // Prevent repetitive invocation
+    KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
+
+    if Assigned(FOnDelayedChange) then
+      FOnDelayedChange(Self);
+  end
+  else
     inherited;
 end;
 
