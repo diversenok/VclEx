@@ -206,14 +206,18 @@ procedure TEditEx.Change;
 begin
   inherited;
 
-  if FDelayedChangeTimeout > 0 then
+  if not Assigned(FOnDelayedChange) then
+    Exit;
+
+  if Text = '' then
   begin
-    // Prepare a timer for delayed event invocation
-    if Assigned(FOnDelayedChange) then
-      SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil)
-  end
-  else if Assigned(FOnDelayedChange) then
+    KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
     FOnDelayedChange(Self);
+  end
+  else if FDelayedChangeTimeout = 0 then
+    FOnDelayedChange(Self)
+  else
+    SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil);
 end;
 
 constructor TEditEx.Create;
@@ -263,14 +267,18 @@ procedure TButtonedEditEx.Change;
 begin
   inherited;
 
-  if FDelayedChangeTimeout > 0 then
+  if not Assigned(FOnDelayedChange) then
+    Exit;
+
+  if Text = '' then
   begin
-    // Prepare a timer for delayed event invocation
-    if Assigned(FOnDelayedChange) then
-      SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil)
-  end
-  else if Assigned(FOnDelayedChange) then
+    KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
     FOnDelayedChange(Self);
+  end
+  else if FDelayedChangeTimeout = 0 then
+    FOnDelayedChange(Self)
+  else
+    SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil);
 end;
 
 constructor TButtonedEditEx.Create;
