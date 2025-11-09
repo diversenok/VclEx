@@ -10,35 +10,47 @@ type
   TEditEx = class(TEdit)
   private
     FOnDelayedChange: TNotifyEvent;
+    FOnTypingChange: TNotifyEvent;
     FDelayedChangeTimeout: Cardinal;
+    FTyping: Boolean;
+    procedure SetTyping(Value: Boolean);
   protected
     procedure WMTimer(var Message: TWMTimer); message WM_TIMER;
     procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
     procedure KeyPress(var Key: Char); override;
     procedure CreateWindowHandle(const Params: TCreateParams); override;
+    procedure DelayedChange; virtual;
     procedure Change; override;
   public
     constructor Create(AOwner: TComponent); override;
+    property Typing: Boolean read FTyping;
   published
     property DelayedChangeTimeout: Cardinal read FDelayedChangeTimeout write FDelayedChangeTimeout default 500;
     property OnDelayedChange: TNotifyEvent read FOnDelayedChange write FOnDelayedChange;
+    property OnTypingChange: TNotifyEvent read FOnTypingChange write FOnTypingChange;
   end;
 
   TButtonedEditEx = class(TButtonedEdit)
   private
     FOnDelayedChange: TNotifyEvent;
+    FOnTypingChange: TNotifyEvent;
     FDelayedChangeTimeout: Cardinal;
+    FTyping: Boolean;
+    procedure SetTyping(Value: Boolean);
   protected
     procedure WMTimer(var Message: TWMTimer); message WM_TIMER;
     procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
     procedure KeyPress(var Key: Char); override;
     procedure CreateWindowHandle(const Params: TCreateParams); override;
+    procedure DelayedChange; virtual;
     procedure Change; override;
   public
     constructor Create(AOwner: TComponent); override;
+    property Typing: Boolean read FTyping;
   published
     property DelayedChangeTimeout: Cardinal read FDelayedChangeTimeout write FDelayedChangeTimeout default 500;
     property OnDelayedChange: TNotifyEvent read FOnDelayedChange write FOnDelayedChange;
+    property OnTypingChange: TNotifyEvent read FOnTypingChange write FOnTypingChange;
   end;
 
 procedure Register;
@@ -206,18 +218,22 @@ procedure TEditEx.Change;
 begin
   inherited;
 
-  if not Assigned(FOnDelayedChange) then
+  if not HandleAllocated then
     Exit;
 
   if Text = '' then
   begin
     KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
-    FOnDelayedChange(Self);
+    SetTyping(False);
+    DelayedChange;
   end
   else if FDelayedChangeTimeout = 0 then
-    FOnDelayedChange(Self)
+    DelayedChange
   else
+  begin
     SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil);
+    SetTyping(True);
+  end;
 end;
 
 constructor TEditEx.Create;
@@ -232,6 +248,12 @@ begin
   SendMessageW(Handle, EM_SETWORDBREAKPROC, 0, LPARAM(@EditWordBreakProc));
 end;
 
+procedure TEditEx.DelayedChange;
+begin
+  if Assigned(FOnDelayedChange) then
+    FOnDelayedChange(Self);
+end;
+
 procedure TEditEx.KeyPress;
 begin
   // Avoid adding the DEL character on Crtl+Backspace
@@ -239,6 +261,17 @@ begin
     Key := #0;
 
   inherited;
+end;
+
+procedure TEditEx.SetTyping;
+begin
+  if Value <> FTyping then
+  begin
+    FTyping := Value;
+
+    if Assigned(FOnTypingChange) then
+      FOnTypingChange(Self);
+  end;
 end;
 
 procedure TEditEx.WMKeyDown;
@@ -253,9 +286,8 @@ begin
   begin
     // Prevent repetitive invocation
     KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
-
-    if Assigned(FOnDelayedChange) then
-      FOnDelayedChange(Self);
+    SetTyping(False);
+    DelayedChange;
   end
   else
     inherited;
@@ -267,18 +299,22 @@ procedure TButtonedEditEx.Change;
 begin
   inherited;
 
-  if not Assigned(FOnDelayedChange) then
+  if not HandleAllocated then
     Exit;
 
   if Text = '' then
   begin
     KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
-    FOnDelayedChange(Self);
+    SetTyping(False);
+    DelayedChange;
   end
   else if FDelayedChangeTimeout = 0 then
-    FOnDelayedChange(Self)
+    DelayedChange
   else
+  begin
     SetTimer(Handle, DELAYED_CHANGE_TIMER_ID, FDelayedChangeTimeout, nil);
+    SetTyping(True);
+  end;
 end;
 
 constructor TButtonedEditEx.Create;
@@ -293,6 +329,12 @@ begin
   SendMessageW(Handle, EM_SETWORDBREAKPROC, 0, LPARAM(@EditWordBreakProc));
 end;
 
+procedure TButtonedEditEx.DelayedChange;
+begin
+  if Assigned(FOnDelayedChange) then
+    FOnDelayedChange(Self);
+end;
+
 procedure TButtonedEditEx.KeyPress;
 begin
   // Avoid adding the DEL character on Crtl+Backspace
@@ -300,6 +342,17 @@ begin
     Key := #0;
 
   inherited;
+end;
+
+procedure TButtonedEditEx.SetTyping;
+begin
+  if Value <> FTyping then
+  begin
+    FTyping := Value;
+
+    if Assigned(FOnTypingChange) then
+      FOnTypingChange(Self);
+  end;
 end;
 
 procedure TButtonedEditEx.WMKeyDown;
@@ -314,9 +367,8 @@ begin
   begin
     // Prevent repetitive invocation
     KillTimer(Handle, DELAYED_CHANGE_TIMER_ID);
-
-    if Assigned(FOnDelayedChange) then
-      FOnDelayedChange(Self);
+    SetTyping(False);
+    DelayedChange;
   end
   else
     inherited;

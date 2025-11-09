@@ -55,3 +55,4 @@ Improved versions of `TEdit` and `TButtonedEdit` controls.
 ### New features
  - <kbd>Ctrl+Backspace</kbd> erases the previous word
  - `OnDelayedChange` event that fires after a configurable delay of `DelayedChangeTimeout` after the user stops typing
+ - `Typing` and `OnTypingChange` indicate when the user starts and stops typing
