@@ -26,6 +26,7 @@ package VclExtension;
 {$DEFINE RELEASE}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'Vcl Extended Components'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires

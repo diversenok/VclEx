@@ -1,5 +1,12 @@
 unit VclEx.Edit;
 
+{
+  This module contains the full runtime component definitions for
+  TEditEx and TButtonedEditEx.
+
+  NOTE: Keep the published interface in sync with the design-time definitions!
+}
+
 interface
 
 uses
@@ -53,17 +60,10 @@ type
     property OnTypingChange: TNotifyEvent read FOnTypingChange write FOnTypingChange;
   end;
 
-procedure Register;
-
 implementation
 
 uses
   Winapi.Windows;
-
-procedure Register;
-begin
-  RegisterComponents('Extensions', [TEditEx, TButtonedEditEx]);
-end;
 
 var
   SuppressLeftMove: Boolean;

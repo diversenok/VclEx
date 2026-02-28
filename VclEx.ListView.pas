@@ -1,5 +1,11 @@
 unit VclEx.ListView;
 
+{
+  This module contains the full runtime component definition for TListViewEx.
+
+  NOTE: Keep the published interface in sync with the design-time definitions!
+}
+
 interface
 
 uses
@@ -102,17 +108,10 @@ type
     property OnEditingEnd: TNotifyEvent read FOnEditingEnd write FOnEditingEnd;
   end;
 
-procedure Register;
-
 implementation
 
 uses
   Vcl.Graphics, Vcl.Clipbrd, Vcl.Forms;
-
-procedure Register;
-begin
-  RegisterComponents('Extensions', [TListViewEx]);
-end;
 
 { TListViewEx }
 
